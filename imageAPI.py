@@ -1,6 +1,7 @@
 import numpy as np
 import cv2
 import imutils
+import time
 #x,y,face,range
 class imageAPI(object):
 
@@ -242,6 +243,7 @@ class imageAPI(object):
                 i += 1
 
             loopCount += 1
+            time.sleep(0.4)
 
         for x in count:
             if(x>3):
