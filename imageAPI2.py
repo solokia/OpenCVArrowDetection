@@ -3,7 +3,7 @@ import cv2
 import imutils
 import time
 #x,y,face,range
-class imageAPI(object):
+class imageAPI2(object):
 
     def __init__(self):
         #coord = coords()
@@ -30,9 +30,9 @@ class imageAPI(object):
 
         #1square 6500,6249,6239
         if size == 2:
-            self.frameL = self.frame[200:-100,:200]
-            self.frameM = self.frame[200:-100,200:400]
-            self.frameR = self.frame[200:-100,420:]
+            self.frameL = self.frame[200:-100,:220]
+            self.frameM = self.frame[200:-100,180:400]
+            self.frameR = self.frame[200:-100,380:]
             self.expectedArea = 5000
 
         #2square 2882,2991,2848
@@ -186,19 +186,19 @@ class imageAPI(object):
 
         for contour in self.contours:
             area = cv2.contourArea(contour)
-            
+            c = contour
             #before resize ~ 130k after resize 7k
             if area != 0 : 
-                M = cv2.moments(contour)
-                cX = int((M["m10"] / M["m00"]) * self.ratio)
-                cY = int((M["m01"] / M["m00"]) * self.ratio)
+                #M = cv2.moments(contour)
+                #cX = int((M["m10"] / M["m00"]) * self.ratio)
+                #cY = int((M["m01"] / M["m00"]) * self.ratio)
                 #cv2.putText(self.frame,str(i),(cX,cY),font,1,(0,0,255),1)
             
 
                 i += 1
-                c = contour.astype("float")
-                c *=self.ratio
-                c = c.astype("int")
+                #c = contour.astype("float")
+                #c *=self.ratio
+                #c = c.astype("int")
                 x,y,w,h = cv2.boundingRect(c)
                 
                 
@@ -208,7 +208,7 @@ class imageAPI(object):
                     approx = cv2.approxPolyDP(c, 0.02 * peri, True)
                     #set to 2% to get 7 points
                     print("Area  ",i," : ",area)
-                    self.setVal(approx)
+                    #self.setVal(approx)
                     print("w/h",w,"/",h)
                     found = self.getArrow(approx,c)
                     print("approx : ",len(approx))
@@ -225,9 +225,12 @@ class imageAPI(object):
     def run(self,dist):
 
         #count = {"left":0,"middle":0,"right":0}
+        time.sleep(1)
+
+        self.setFrame()
         count = [0, 0, 0]
         loopCount = 0
-        while loopCount < 5 :
+        while loopCount < 4 :
 
             self.setFrame()
             self.setFrameSize(dist)
@@ -246,10 +249,10 @@ class imageAPI(object):
                 i += 1
 
             loopCount += 1
-            time.sleep(0.4)
+            time.sleep(0.2)
 
         for x in count:
-            if(x>3):
+            if(x>2):
                 x = True
             else:
                 x = False
@@ -265,9 +268,7 @@ class imageAPI(object):
         cv2.waitKey(0)
         
         
-cv2.destroyAllWindows()
-
-           
+        cv2.destroyAllWindows()    
         
         print(count)
         return count
