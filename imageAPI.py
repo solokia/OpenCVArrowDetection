@@ -7,6 +7,7 @@ class imageAPI(object):
 
     def __init__(self):
         #coord = coords()
+        
         self.font = cv2.FONT_HERSHEY_SIMPLEX
         self.cap = cv2.VideoCapture(0)
 
@@ -20,6 +21,10 @@ class imageAPI(object):
     def setFrameSize(self,size):
 
         #frame goes by [starty:endy,startx,end]
+        self.frameL = self.frame[1:2,1:2]
+        self.frameM = self.frame[100:-100, 200:-100]
+        self.frameR = self.frame[1:2,1:2]
+        self.expectedArea = 10000
 
         #0square 18000
         if size == 1:
@@ -30,9 +35,9 @@ class imageAPI(object):
 
         #1square 6500,6249,6239
         if size == 2:
-            self.frameL = self.frame[200:-100,:200]
-            self.frameM = self.frame[200:-100,200:400]
-            self.frameR = self.frame[200:-100,420:]
+            self.frameL = self.frame[200:-100,:220]
+            self.frameM = self.frame[200:-100,180:400]
+            self.frameR = self.frame[200:-100,380:]
             self.expectedArea = 5000
 
         #2square 2882,2991,2848
@@ -56,6 +61,7 @@ class imageAPI(object):
             self.frameM = self.frame[270:-120,250:350]
             self.frameR = self.frame[270:-120,350:450]
             self.expectedArea = 600
+
 
         self.frames = (self.frameL,self.frameM,self.frameR)
 
@@ -186,19 +192,19 @@ class imageAPI(object):
 
         for contour in self.contours:
             area = cv2.contourArea(contour)
-            
+            c = contour
             #before resize ~ 130k after resize 7k
             if area != 0 : 
-                M = cv2.moments(contour)
-                cX = int((M["m10"] / M["m00"]) * self.ratio)
-                cY = int((M["m01"] / M["m00"]) * self.ratio)
+                #M = cv2.moments(contour)
+                #cX = int((M["m10"] / M["m00"]) * self.ratio)
+                #cY = int((M["m01"] / M["m00"]) * self.ratio)
                 #cv2.putText(self.frame,str(i),(cX,cY),font,1,(0,0,255),1)
             
 
                 i += 1
-                c = contour.astype("float")
-                c *=self.ratio
-                c = c.astype("int")
+                #c = contour.astype("float")
+                #c *=self.ratio
+                #c = c.astype("int")
                 x,y,w,h = cv2.boundingRect(c)
                 
                 
@@ -208,7 +214,7 @@ class imageAPI(object):
                     approx = cv2.approxPolyDP(c, 0.02 * peri, True)
                     #set to 2% to get 7 points
                     print("Area  ",i," : ",area)
-                    self.setVal(approx)
+                    #self.setVal(approx)
                     print("w/h",w,"/",h)
                     found = self.getArrow(approx,c)
                     print("approx : ",len(approx))
@@ -225,9 +231,18 @@ class imageAPI(object):
     def run(self,dist):
 
         #count = {"left":0,"middle":0,"right":0}
+        
+        
+        time.sleep(1)
+        self.start = time.time()
+
+        
+        self.setFrame()
+        #cv2.imshow('start',self.frame)
         count = [0, 0, 0]
         loopCount = 0
-        while loopCount < 5 :
+        while loopCount < 4 :
+
 
             self.setFrame()
             self.setFrameSize(dist)
@@ -246,10 +261,13 @@ class imageAPI(object):
                 i += 1
 
             loopCount += 1
-            time.sleep(0.4)
+            print("loopCount : ",loopCount)
+            print("Time taken so far : ",(time.time()-self.start))
+            #time.sleep(0.2)
+
 
         for x in count:
-            if(x>3):
+            if(x>2):
                 x = True
             else:
                 x = False
@@ -259,17 +277,19 @@ class imageAPI(object):
         #rawCapture.truncate(0)
 
         # if the `q` key was pressed, break from the loop
-        cv2.imshow('famel',self.frameL)
-        cv2.imshow('frameM',self.frameM)
-        cv2.imshow('frameR',self.frameR)
-        cv2.waitKey(0)
+        #self.cap.release()
+        print("Time taken so far : ",(time.time()-self.start))
+        #cv2.imshow('famel',self.frameL)
+        #cv2.imshow('frameM',self.frameM)
+        #cv2.imshow('frameR',self.frameR)
+        print("Time taken so far : ",(time.time()-self.start))
+        #cv2.waitKey(0)
         
         
-cv2.destroyAllWindows()
-
-           
+        #cv2.destroyAllWindows()    
         
         print(count)
+
         return count
 
 
