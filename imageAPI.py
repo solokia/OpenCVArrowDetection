@@ -21,6 +21,10 @@ class imageAPI(object):
     def setFrameSize(self,size):
 
         #frame goes by [starty:endy,startx,end]
+        self.frameL = self.frame[1:2,1:2]
+        self.frameM = self.frame[100:-100, 200:-100]
+        self.frameR = self.frame[1:2,1:2]
+        self.expectedArea = 10000
 
         #0square 18000
         if size == 1:
@@ -57,6 +61,7 @@ class imageAPI(object):
             self.frameM = self.frame[270:-120,250:350]
             self.frameR = self.frame[270:-120,350:450]
             self.expectedArea = 600
+
 
         self.frames = (self.frameL,self.frameM,self.frameR)
 
@@ -233,7 +238,7 @@ class imageAPI(object):
 
         
         self.setFrame()
-        cv2.imshow('start',self.frame)
+        #cv2.imshow('start',self.frame)
         count = [0, 0, 0]
         loopCount = 0
         while loopCount < 4 :
@@ -272,16 +277,16 @@ class imageAPI(object):
         #rawCapture.truncate(0)
 
         # if the `q` key was pressed, break from the loop
-        self.cap.release()
+        #self.cap.release()
         print("Time taken so far : ",(time.time()-self.start))
-        cv2.imshow('famel',self.frameL)
-        cv2.imshow('frameM',self.frameM)
-        cv2.imshow('frameR',self.frameR)
+        #cv2.imshow('famel',self.frameL)
+        #cv2.imshow('frameM',self.frameM)
+        #cv2.imshow('frameR',self.frameR)
         print("Time taken so far : ",(time.time()-self.start))
-        cv2.waitKey(0)
+        #cv2.waitKey(0)
         
         
-        cv2.destroyAllWindows()    
+        #cv2.destroyAllWindows()    
         
         print(count)
 
