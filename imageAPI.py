@@ -7,6 +7,7 @@ class imageAPI(object):
 
     def __init__(self):
         #coord = coords()
+        
         self.font = cv2.FONT_HERSHEY_SIMPLEX
         self.cap = cv2.VideoCapture(0)
 
@@ -225,12 +226,18 @@ class imageAPI(object):
     def run(self,dist):
 
         #count = {"left":0,"middle":0,"right":0}
+        
+        
         time.sleep(1)
+        self.start = time.time()
 
+        
         self.setFrame()
+        cv2.imshow('start',self.frame)
         count = [0, 0, 0]
         loopCount = 0
         while loopCount < 4 :
+
 
             self.setFrame()
             self.setFrameSize(dist)
@@ -249,7 +256,10 @@ class imageAPI(object):
                 i += 1
 
             loopCount += 1
-            time.sleep(0.2)
+            print("loopCount : ",loopCount)
+            print("Time taken so far : ",(time.time()-self.start))
+            #time.sleep(0.2)
+
 
         for x in count:
             if(x>2):
@@ -262,15 +272,19 @@ class imageAPI(object):
         #rawCapture.truncate(0)
 
         # if the `q` key was pressed, break from the loop
+        self.cap.release()
+        print("Time taken so far : ",(time.time()-self.start))
         cv2.imshow('famel',self.frameL)
         cv2.imshow('frameM',self.frameM)
         cv2.imshow('frameR',self.frameR)
+        print("Time taken so far : ",(time.time()-self.start))
         cv2.waitKey(0)
         
         
         cv2.destroyAllWindows()    
         
         print(count)
+
         return count
 
 
