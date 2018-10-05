@@ -2,6 +2,8 @@ import numpy as np
 import cv2
 import imutils
 import time
+import json
+
 #x,y,face,range
 class imageAPI(object):
 
@@ -232,7 +234,8 @@ class imageAPI(object):
 
         #count = {"left":0,"middle":0,"right":0}
         
-        
+        datastore = json.load(dist)
+        arrow = datastore["arrow"]
         time.sleep(1)
         self.start = time.time()
 
@@ -265,14 +268,15 @@ class imageAPI(object):
             print("Time taken so far : ",(time.time()-self.start))
             #time.sleep(0.2)
 
-
+        i=1
         for x in count:
-            if(x>2):
-                x = True
+            if(x>3):
+                arrow[i] = True
             else:
-                x = False
+                arrow[i] = False
+            i += 1
 
-       
+        datastore["arrow"] = arrow
         # clear the stream in preparation for the next frame
         #rawCapture.truncate(0)
 
