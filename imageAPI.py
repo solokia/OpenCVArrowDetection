@@ -234,7 +234,7 @@ class imageAPI(object):
 
         #count = {"left":0,"middle":0,"right":0}
         
-        datastore = json.load(dist)
+        datastore = json.loads(dist)
         arrow = datastore["arrow"]
         time.sleep(1)
         self.start = time.time()
@@ -248,7 +248,7 @@ class imageAPI(object):
 
 
             self.setFrame()
-            self.setFrameSize(dist)
+            self.setFrameSize(arrow[0])
             
             i = 0
             for frame in self.frames:
@@ -294,7 +294,7 @@ class imageAPI(object):
         
         print(count)
 
-        return count
+        return datastore
 
 
     def closeAPI(self):                                         
@@ -317,7 +317,7 @@ class imageAPI(object):
 #    break
 
     
-
+#'{"explore": "abc", "grid": "abc", "robotPosition": [1,2,3], "arrow": [1,False,False,False]}'
                
                         
 
