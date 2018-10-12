@@ -1,6 +1,7 @@
 import numpy as np
 import cv2
 import imutils
+import math
 
 font = cv2.FONT_HERSHEY_SIMPLEX
 cap = cv2.VideoCapture(0)
@@ -76,6 +77,9 @@ while True:
                     cv2.putText(frame,"up",(cX,cY),font,1,(0,0,255),1)
                     cv2.drawContours(frame, c, -1, (0, 255, 0), 2)
                     cv2.rectangle(frame,(x,y),(x+w,y+h),(0,255,0),2)
+                    print("Inverse Tang left : ",math.atan((approx[1][0][0]-approx[0][0][0]),(approx[1][0][1]-approx[0][0][1])))
+                    print("Inverse Tang right : ",math.atan((approx[len(approx-1)][0][0]-approx[0][0][0]),(approx[len(approx-1)][0][1]-approx[0][0][1])))
+                    
                     return True
 
                 elif abs(minyx-maxyx)<=w*0.2 :
