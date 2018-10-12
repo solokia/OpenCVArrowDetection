@@ -66,6 +66,13 @@ class imageAPI(object):
 
 
         self.frames = (self.frameL,self.frameM,self.frameR)
+        
+        picn = "./"+time.time+"L.jpg"
+        cv2.imwrite(picn,frameL)        
+        picn = "./"+time.time+"M.jpg"
+        cv2.imwrite(picn,frameM)        
+
+
 
     def setThresh(self,frame):
          ###set to hsv for mask ###
