@@ -30,8 +30,8 @@ class imageAPI(object):
 
         #0square 18000
         if size == 1:
-            self.frameL = self.frame[1:2,1:2]
-            self.frameM = self.frame[100:-100, 200:-100]
+            self.frameL = self.frame[:-50,:400]
+            self.frameM = self.frame[:-50,300:]
             self.frameR = self.frame[1:2,1:2]
             self.expectedArea = 10000
 
@@ -294,7 +294,7 @@ class imageAPI(object):
         
         print(count)
 
-        return datastore
+        return json.dumps(datastore)
 
 
     def closeAPI(self):                                         
