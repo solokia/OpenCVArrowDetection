@@ -3,16 +3,15 @@ import cv2
 import imutils
 import time
 import json
-import math
 
 #x,y,face,range
 class imageAPI(object):
 
     def __init__(self):
         #coord = coords()
-        
+        self.frame = cv2.imread("./fn.jpg")
         self.font = cv2.FONT_HERSHEY_SIMPLEX
-        self.cap = cv2.VideoCapture(0)
+        #self.cap = cv2.VideoCapture(0)
 
     def setFrame(self):
         _,self.frame = self.cap.read()
@@ -66,36 +65,38 @@ class imageAPI(object):
             self.expectedArea = 600
 
 
-        self.frames = (self.frameL,self.frameM,self.frameR)       
-        picn = "./"+time.time()+"L.jpg"
-        cv2.imwrite(picn,frameL)        
-        picn = "./"+time.time()+"M.jpg"
-        cv2.imwrite(picn,frameM)        
+        self.frames = (self.frameL,self.frameM,self.frameR)
+        
+        #picn = "./"+time.time()+"L.jpg"
+        #cv2.imwrite(picn,frameL)        
+        #picn = "./"+time.time()+"M.jpg"
+        #cv2.imwrite(picn,frameM)        
+
 
 
     def setThresh(self,frame):
          ###set to hsv for mask ###
-        #hsv = cv2.cvtColor(self.frame, cv2.COLOR_BGR2HSV)
-        #lower = np.array([0,0,80])
-        #upper = np.array([200,200,255])
-        #mask = cv2.inRange(hsv, lower, upper)
-        #res = cv2.bitwise_and(self.frame,self.frame, mask= mask)
+        hsv = cv2.cvtColor(self.frame, cv2.COLOR_BGR2HSV)
+        lower = np.array([0,0,200])
+        upper = np.array([40,40,255])
+        mask = cv2.inRange(hsv, lower, upper)
+        res = cv2.bitwise_and(self.frame,self.frame, mask= mask)
         ### helps to remove certain small lightings but might affect arrow when mask###
 
 
         #resized = imutils.resize(self.frame, width=300)
         #self.ratio = self.frame.shape[0] / float(resized.shape[0])
         self.ratio = 1
-        resized = frame
-        #resized = res
+        #resized = frame
+        resized = res
         #resize helps reduce number of pixel for calc
 
         blurred_frame = cv2.GaussianBlur(resized, (9, 9), 0)
         gray = cv2.cvtColor(blurred_frame,cv2.COLOR_BGR2GRAY)
         #blur cvt to gray
-        ret, self.thresh = cv2.threshold(gray,100,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)
-        
-        #thresh = cv2.Canny(gray,50,100)
+        ret, self.thresh = cv2.threshold(gray,200,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)
+        #self.thresh = cv2.GaussianBlur(self.thresh, (15, 15), 0)
+        #self.thresh = cv2.Canny(gray,50,100)
     
     def getThresh(self):
         return self.thresh
@@ -117,7 +118,7 @@ class imageAPI(object):
                 
                 if (approx[1][0][1]>= (approx[len(approx)-1][0][1]-h*0.1)) and (approx[1][0][1] <= (approx[len(approx)-1][0][1]+h*0.1)) :
                     #cv2.putText(self.frame,"up",(cX,cY),font,1,(0,0,255),1)
-                    #cv2.drawContours(self.frame, c, -1, (0, 255, 0), 2)
+                    cv2.drawContours(self.frame, c, -1, (0, 255, 0), 2)
                     #cv2.rectangle(self.frame,(x,y),(x+w,y+h),(0,255,0),2)
                     print("UP arrow")
                     return True
@@ -207,7 +208,7 @@ class imageAPI(object):
                 #cX = int((M["m10"] / M["m00"]) * self.ratio)
                 #cY = int((M["m01"] / M["m00"]) * self.ratio)
                 #cv2.putText(self.frame,str(i),(cX,cY),font,1,(0,0,255),1)
-            
+                cv2.drawContours(self.frame, c, -1, (0, 255, 0), 2)
 
                 i += 1
                 #c = contour.astype("float")
@@ -231,84 +232,84 @@ class imageAPI(object):
             #2% epsilon will get all corners so far
             
             
-            if i >12 :
+            if i >30 :
                 return False
             if found :
                 return True
 
-    def run(self,dist):
+    def run(self):
 
         #count = {"left":0,"middle":0,"right":0}
-        self.timenow = time.time()
-        datastore = json.loads(dist)
-        arrow = datastore["arrow"]
-        time.sleep(1)
-        self.start = time.time()
+        
+        # datastore = json.loads(dist)
+        # arrow = datastore["arrow"]
+        # #time.sleep(1)
+        # self.start = time.time()
 
-        while(time.time()-self.start >=1)
-        time.sleep(1)
-
-        self.setFrame()
-        #cv2.imshow('start',self.frame)
-        count = [0, 0, 0]
-        loopCount = 0
-        while loopCount < 4 :
+        
+        # self.setFrame()
+        # #cv2.imshow('start',self.frame)
+        # count = [0, 0, 0]
+        # loopCount = 0
+        # while loopCount < 4 :
 
 
-            self.setFrame()
-            self.setFrameSize(arrow[0])
+        #     self.setFrame()
+        #     self.setFrameSize(arrow[0])
             
-            i = 0
-            for frame in self.frames:
-                self.setThresh(frame)
-                self.setContour(self.thresh)
+        #     i = 0
+        #     for frame in self.frames:
+        self.setThresh(self.frame)
+        self.setContour(self.thresh)
+        self.findArrow()
+        cv2.imshow("thresh",self.thresh)
+        cv2.imshow("frame",self.frame)
 
-                if self.findArrow():
-                    count[i] += 1
+        #         if self.findArrow():
+        #             count[i] += 1
                 
-                else:
-                    count[i] -= 1
+        #         else:
+        #             count[i] -= 1
 
-                i += 1
+        #         i += 1
 
-            loopCount += 1
-            print("loopCount : ",loopCount)
-            print("Time taken so far : ",(time.time()-self.start))
-            #time.sleep(0.2)
+        #     loopCount += 1
+        #     print("image loopCount : ",loopCount)
+        #     print("image Time taken so far : ",(time.time()-self.start))
+        #     #time.sleep(0.2)
 
-        i=1
-        for x in count:
-            if(x>3):
-                arrow[i] = True
-            else:
-                arrow[i] = False
-            i += 1
+        # i=1
+        # for x in count:
+        #     if(x>3):
+        #         arrow[i] = True
+        #     else:
+        #         arrow[i] = False
+        #     i += 1
 
-        datastore["arrow"] = arrow
-        # clear the stream in preparation for the next frame
-        #rawCapture.truncate(0)
+        # datastore["arrow"] = arrow
+        # # clear the stream in preparation for the next frame
+        # #rawCapture.truncate(0)
 
-        # if the `q` key was pressed, break from the loop
-        #self.cap.release()
-        print("Time taken so far : ",(time.time()-self.start))
-        #cv2.imshow('famel',self.frameL)
-        #cv2.imshow('frameM',self.frameM)
-        #cv2.imshow('frameR',self.frameR)
-        print("Time taken so far : ",(time.time()-self.start))
-        #cv2.waitKey(0)
+        # # if the `q` key was pressed, break from the loop
+        # #self.cap.release()
+        # #print("Time taken so far : ",(time.time()-self.start))
+        # #cv2.imshow('famel',self.frameL)
+        # #cv2.imshow('frameM',self.frameM)
+        # #cv2.imshow('frameR',self.frameR)
+        # #print("Time taken so far : ",(time.time()-self.start))
+        cv2.waitKey(0)
         
         
-        #cv2.destroyAllWindows()    
+        cv2.destroyAllWindows()    
         
-        print(count)
+        # print(count)
 
-        return json.dumps(datastore)
+        # return json.dumps(datastore)
 
 
     def closeAPI(self):                                         
         self.cap.release()
 
-    
 
 
 # cv2.imshow("Frame", self.frame)

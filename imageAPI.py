@@ -67,10 +67,10 @@ class imageAPI(object):
 
         self.frames = (self.frameL,self.frameM,self.frameR)
         
-        picn = "./"+time.time+"L.jpg"
-        cv2.imwrite(picn,frameL)        
-        picn = "./"+time.time+"M.jpg"
-        cv2.imwrite(picn,frameM)        
+        #picn = "./"+time.time()+"L.jpg"
+        #cv2.imwrite(picn,frameL)        
+        #picn = "./"+time.time()+"M.jpg"
+        #cv2.imwrite(picn,frameM)        
 
 
 
@@ -243,7 +243,7 @@ class imageAPI(object):
         
         datastore = json.loads(dist)
         arrow = datastore["arrow"]
-        time.sleep(1)
+        #time.sleep(1)
         self.start = time.time()
 
         
@@ -271,8 +271,8 @@ class imageAPI(object):
                 i += 1
 
             loopCount += 1
-            print("loopCount : ",loopCount)
-            print("Time taken so far : ",(time.time()-self.start))
+            print("image loopCount : ",loopCount)
+            print("image Time taken so far : ",(time.time()-self.start))
             #time.sleep(0.2)
 
         i=1
@@ -289,11 +289,11 @@ class imageAPI(object):
 
         # if the `q` key was pressed, break from the loop
         #self.cap.release()
-        print("Time taken so far : ",(time.time()-self.start))
+        #print("Time taken so far : ",(time.time()-self.start))
         #cv2.imshow('famel',self.frameL)
         #cv2.imshow('frameM',self.frameM)
         #cv2.imshow('frameR',self.frameR)
-        print("Time taken so far : ",(time.time()-self.start))
+        #print("Time taken so far : ",(time.time()-self.start))
         #cv2.waitKey(0)
         
         
