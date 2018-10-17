@@ -80,7 +80,7 @@ class imageAPI(object):
         lower = np.array([0,0,200])
         upper = np.array([40,40,255])
         mask = cv2.inRange(hsv, lower, upper)
-        res = cv2.bitwise_and(self.frame,self.frame, mask= mask)
+        self.res = cv2.bitwise_and(self.frame,self.frame, mask= mask)
         ### helps to remove certain small lightings but might affect arrow when mask###
 
 
@@ -88,7 +88,7 @@ class imageAPI(object):
         #self.ratio = self.frame.shape[0] / float(resized.shape[0])
         self.ratio = 1
         #resized = frame
-        resized = res
+        resized = self.res
         #resize helps reduce number of pixel for calc
 
         blurred_frame = cv2.GaussianBlur(resized, (9, 9), 0)
@@ -117,9 +117,9 @@ class imageAPI(object):
                 
                 
                 if (approx[1][0][1]>= (approx[len(approx)-1][0][1]-h*0.1)) and (approx[1][0][1] <= (approx[len(approx)-1][0][1]+h*0.1)) :
-                    #cv2.putText(self.frame,"up",(cX,cY),font,1,(0,0,255),1)
+                    cv2.putText(self.frame,"up",(cX,cY),font,1,(0,0,255),1)
                     cv2.drawContours(self.frame, c, -1, (0, 255, 0), 2)
-                    #cv2.rectangle(self.frame,(x,y),(x+w,y+h),(0,255,0),2)
+                    cv2.rectangle(self.frame,(x,y),(x+w,y+h),(0,255,0),2)
                     print("UP arrow")
                     return True
 
@@ -207,8 +207,8 @@ class imageAPI(object):
                 #M = cv2.moments(contour)
                 #cX = int((M["m10"] / M["m00"]) * self.ratio)
                 #cY = int((M["m01"] / M["m00"]) * self.ratio)
-                #cv2.putText(self.frame,str(i),(cX,cY),font,1,(0,0,255),1)
-                cv2.drawContours(self.frame, c, -1, (0, 255, 0), 2)
+                #cv2.putText(self.frame,str(i),(cX,cY),self.font,1,(0,0,255),1)
+                #cv2.drawContours(self.frame, c, -1, (0, 255, 0), 2)
 
                 i += 1
                 #c = contour.astype("float")
@@ -264,6 +264,8 @@ class imageAPI(object):
         self.findArrow()
         cv2.imshow("thresh",self.thresh)
         cv2.imshow("frame",self.frame)
+        cv2.imshow("res",self.res)
+        cv2.imwrite("./images/res.jpg",self.res)
 
         #         if self.findArrow():
         #             count[i] += 1

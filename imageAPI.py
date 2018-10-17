@@ -48,16 +48,16 @@ class imageAPI(object):
     def setFrameSize(self, size):
 
         # frame goes by [starty:endy,startx,end]
-        self.frameL = self.frame[:-50, :400]
-        self.frameM = self.frame[:-50, 300:]
-        self.frameR = self.frame[1:2, 1:2]
+        self.frameL = self.frame[1:2, 1:2]
+        self.frameM = self.frame[:-50, :400]
+        self.frameR = self.frame[:-50, 300:]
         self.expectedArea = 10000
 
         # 0square 18000
         if size == 1:
-            self.frameL = self.frame[:-50, :400]
-            self.frameM = self.frame[:-50, 300:]           
-            self.frameR = self.frame[1:2, 1:2]
+            self.frameL = self.frame[1:2, 1:2]
+            self.frameM = self.frame[:-50, :400]
+            self.frameR = self.frame[:-50, 300:]
             self.expectedArea = 10000
 
         # 1square 6500,6249,6239
@@ -91,9 +91,9 @@ class imageAPI(object):
 
         self.frames = (self.frameL, self.frameM, self.frameR)
         
-        savename="L"+self.testname
+        savename="./images/M"+self.testname
         cv2.imwrite(savename,self.frameL)
-        savename="M"+self.testname
+        savename="./images/R"+self.testname
         cv2.imwrite(savename,self.frameM)
         
 
@@ -120,19 +120,7 @@ class imageAPI(object):
         gray = cv2.cvtColor(blurred_frame,cv2.COLOR_BGR2GRAY)
         #blur cvt to gray
         ret, self.thresh = cv2.threshold(gray,200,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)
-        #self.thresh = cv2.GaussianBlur(self.thresh, (15, 15), 0)
-        # resized = imutils.resize(self.frame, width=300)
-        # self.ratio = self.frame.shape[0] / float(resized.shape[0])
-        self.ratio = 1
-        resized = frame
-        # resized = res
-        # resize helps reduce number of pixel for calc
 
-        blurred_frame = cv2.GaussianBlur(resized, (9, 9), 0)
-        gray = cv2.cvtColor(blurred_frame, cv2.COLOR_BGR2GRAY)
-        # blur cvt to gray
-        ret, self.thresh = cv2.threshold(gray, 100, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
-        
         # thresh = cv2.Canny(gray,50,100)
 
     # Setting the contour according to the thresh hold value
@@ -231,9 +219,9 @@ class imageAPI(object):
         
         #save picture name as position of robot followed by unix time
         #imagename = "./"+str(rpos)+"T"+str(time.time())+".jpg"
-        imagename = "./"+str(rpos)+".jpg"
+        imagename = "./images/"+str(rpos)+".jpg"
         cv2.imwrite(imagename, self.frame)
-        truename = "./true"+str(rpos)+".jpg"
+        truename = "./images/true"+str(rpos)+".jpg"
         i=1
         for x in count:
             if (x > 0):
