@@ -92,9 +92,9 @@ class imageAPI(object):
         self.frames = (self.frameL, self.frameM, self.frameR)
         
         savename="./images/M"+self.testname
-        cv2.imwrite(savename,self.frameL)
-        savename="./images/R"+self.testname
         cv2.imwrite(savename,self.frameM)
+        savename="./images/R"+self.testname
+        cv2.imwrite(savename,self.frameR)
         
 
     # To set the threshhold value for contours
@@ -102,9 +102,12 @@ class imageAPI(object):
 
         ###set to hsv for mask ###
         hsv = cv2.cvtColor(self.frame, cv2.COLOR_BGR2HSV)
-        lower = np.array([0,0,200])
-        upper = np.array([40,40,255])
+        lower = np.array([0,0,180])
+        upper = np.array([80,80,255])
         mask = cv2.inRange(hsv, lower, upper)
+        kernel = np.ones((9,9),np.uint8)
+        dilation = cv2.dilate(mask,kernel,iterations = 1)
+        mask = dilation
         res = cv2.bitwise_and(self.frame,self.frame, mask= mask)
         ### helps to remove certain small lightings but might affect arrow when mask###
 
@@ -116,7 +119,7 @@ class imageAPI(object):
         resized = res
         #resize helps reduce number of pixel for calc
 
-        blurred_frame = cv2.GaussianBlur(resized, (9, 9), 0)
+        blurred_frame = cv2.GaussianBlur(resized, (15, 15), 0)
         gray = cv2.cvtColor(blurred_frame,cv2.COLOR_BGR2GRAY)
         #blur cvt to gray
         ret, self.thresh = cv2.threshold(gray,200,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)
@@ -149,17 +152,19 @@ class imageAPI(object):
 
         i = 0
         found = False
-
+	print('len', len(self.contours))
         for contour in self.contours:
             area = cv2.contourArea(contour)
             c = contour
+            print('area', area)
             # before resize ~ 130k after resize 7k
             if area != 0:
 
                 i += 1
                 # Declare boundaries for arrow detection
                 x, y, w, h = cv2.boundingRect(c)
-
+                
+                print(x, y, w, h)
                 if (w / h > 0.85) and (w / h < 1.3) and area > 2000:
                     peri = cv2.arcLength(c, True)
                     approx = cv2.approxPolyDP(c, 0.02 * peri, True)
@@ -170,7 +175,7 @@ class imageAPI(object):
                     print("approx : ", len(approx))
 
             # 2% epsilon will get all corners so far
-
+            print('i', i)
             if i > 30:
                 return False
             if found:
@@ -193,21 +198,17 @@ class imageAPI(object):
         count = [0, 0, 0]
         loopCount = 0
         while loopCount < 1:
-
+            print("Image setting frame")
             self.setFrame()
             #cv2.imshow('start', self.frame)
             self.setFrameSize(arrow[0])
-
             i = 0
             for frame in self.frames:
                 self.setThresh(frame)
                 self.setContour(self.thresh)
-
+                print("checking frame ",i)
                 if self.findArrow():
                     count[i] += 1
-
-                else:
-                    count[i] -= 1
 
                 i += 1
 
@@ -215,8 +216,7 @@ class imageAPI(object):
             print("loopCount : ", loopCount)
             print("Time taken so far : ", (time.time() - self.start))
             # time.sleep(0.2)
-        
-        
+
         #save picture name as position of robot followed by unix time
         #imagename = "./"+str(rpos)+"T"+str(time.time())+".jpg"
         imagename = "./images/"+str(rpos)+".jpg"
