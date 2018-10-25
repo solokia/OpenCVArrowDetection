@@ -5,6 +5,9 @@ import cv2
 import imutils
 import time
 import json
+import os
+
+
 
 # x,y,face,range
 class imageAPI(object):
@@ -23,6 +26,10 @@ class imageAPI(object):
         #warmup the camera
         time.sleep(0.1)
         #self.cap = cv2.VideoCapture(0)
+        self.start = time.time()
+        self.dirname = "images"+str(self.start)
+        os.mkdir(self.dirname)
+
 
     def videoStart(self):
         global camera, rawCapture, image
@@ -91,9 +98,9 @@ class imageAPI(object):
 
         self.frames = (self.frameL, self.frameM, self.frameR)
         
-        savename="./images/M"+self.testname
+        savename="./images"+str(self.start)+"/M"+self.testname
         cv2.imwrite(savename,self.frameM)
-        savename="./images/R"+self.testname
+        savename="./images"+str(self.start)+"/R"+self.testname
         cv2.imwrite(savename,self.frameR)
         
 
@@ -101,22 +108,22 @@ class imageAPI(object):
     def setThresh(self, frame):
 
         ###set to hsv for mask ###
-        hsv = cv2.cvtColor(self.frame, cv2.COLOR_BGR2HSV)
-        lower = np.array([0,0,180])
-        upper = np.array([80,80,255])
-        mask = cv2.inRange(hsv, lower, upper)
-        kernel = np.ones((9,9),np.uint8)
-        dilation = cv2.dilate(mask,kernel,iterations = 1)
-        mask = dilation
-        res = cv2.bitwise_and(self.frame,self.frame, mask= mask)
+        #hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+        #lower = np.array([0,0,140])
+        #upper = np.array([180,180,255])
+        #mask = cv2.inRange(hsv, lower, upper)
+        #kernel = np.ones((9,9),np.uint8)
+        #dilation = cv2.dilate(mask,kernel,iterations = 1)
+        #mask = dilation
+        #res = cv2.bitwise_and(frame,frame, mask= mask)
         ### helps to remove certain small lightings but might affect arrow when mask###
 
 
         #resized = imutils.resize(self.frame, width=300)
         #self.ratio = self.frame.shape[0] / float(resized.shape[0])
         self.ratio = 1
-        #resized = frame
-        resized = res
+        resized = frame
+        #resized = res
         #resize helps reduce number of pixel for calc
 
         blurred_frame = cv2.GaussianBlur(resized, (15, 15), 0)
@@ -152,7 +159,6 @@ class imageAPI(object):
 
         i = 0
         found = False
-	print('len', len(self.contours))
         for contour in self.contours:
             area = cv2.contourArea(contour)
             c = contour
@@ -190,8 +196,8 @@ class imageAPI(object):
         self.testname = str(rpos)+".jpg"
         arrow = datastore["arrow"]
         # time.sleep(1)
-        self.start = time.time()
 
+        self.runtiming = time.time()
 
 
         #self.setFrame()
@@ -214,14 +220,14 @@ class imageAPI(object):
 
             loopCount += 1
             print("loopCount : ", loopCount)
-            print("Time taken so far : ", (time.time() - self.start))
+            print("Time taken so far : ", (time.time() - self.runtiming))
             # time.sleep(0.2)
 
         #save picture name as position of robot followed by unix time
         #imagename = "./"+str(rpos)+"T"+str(time.time())+".jpg"
-        imagename = "./images/"+str(rpos)+".jpg"
+        imagename = "./images"+str(self.start)+"/"+str(rpos)+".jpg"
         cv2.imwrite(imagename, self.frame)
-        truename = "./images/true"+str(rpos)+".jpg"
+        truename = "./images"+str(self.start)+"/true"+str(rpos)+".jpg"
         i=1
         for x in count:
             if (x > 0):
