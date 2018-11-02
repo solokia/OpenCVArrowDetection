@@ -89,7 +89,7 @@ class imageAPI(object):
             if area != 0:
                 found_area_cnt += 1
                 x, y, w, h = cv2.boundingRect(contour)
-                if (w / h > 0.85) and (w / h < 1.3) and area > 2000:
+                if (w / h > 0.85) and (w / h < 1.3) and area > 10000:
                     peri = cv2.arcLength(contour, True)
                     approx = cv2.approxPolyDP(contour, 0.02 * peri, True)
                     # set to 2% to get 7 points
@@ -142,8 +142,8 @@ class imageAPI(object):
                 if self.findArrow(contours):
                     print('[IMAGE] detected one arrow in frame %s with key %s' % (idx, key))
                     answers.append(True)
-                    # truename = "./images" + str(self.start) + "/true" + str(key) + ".jpg"
-                    # cv2.imwrite(truename, frame)
+                    truename = "./images" + str(self.start) + "/true" + str(key) + ".jpg"
+                    cv2.imwrite(truename, frame)
                 else:
                     answers.append(False)
 
